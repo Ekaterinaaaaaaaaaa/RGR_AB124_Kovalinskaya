@@ -1,185 +1,89 @@
-﻿#include <iostream>
-#include <fstream>
-#include <Windows.h>
-#include <conio.h>
-using namespace std;
+#include "ciphers.h"
 
+void Prog() {
+	int cipher = 1;
+	string line, key;
+	while (cipher) {
 
-void movecursor(int x, int y) {
-	COORD p = { x, y };
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), p);
+		cout << "Выберите шифр: " << endl;
+		cout << "<1> для выбора шифра Атбаш " << endl;
+		cout << "<2> для выбора шифра Виженера " << endl;
+		cout << "<3> для выбора шифра “Тарабарская грамота” " << endl;
+		cout << "<0> для выхода из программы " << endl;
+		cin >> cipher;
+		switch (cipher) {
+		case 1:
+			line = line_get(cipher, key);
+			Atbash(line);
+			cout << "----------------------------------------" << endl;
+			break;
+		case 2:
+			line = line_get(cipher, key);
+			Vizh(line, key);
+			cout << "----------------------------------------" << endl;
+			break;
+		case 3:
+			line = line_get(cipher, key);
+			Tar(line);
+			cout << "----------------------------------------" << endl;
+			break;
+		case 0:
+			break;
+		};
+	}
 }
 
 
-int main() {
-	string password = "1111";
-	ifstream fin;
-	fin.open("test.txt");
-	if (!fin.is_open()) {
-		cout << "Can't open graphic interface file.";
+
+string line_get(int cipher, string& key) {
+	int method = 0;
+	int a = 0;
+	string line, path;
+	ifstream in;
+		cout << "Введите путь к файлу: " << endl;
+		cin >> path;
+		in.open(path);
+		while (true) {
+			while (!in.eof()) {
+				if (a == 1) {
+					getline(in, key);
+					break;
+				}
+				getline(in, line);
+				a++;
+			}
+			if ((checker(line)) && (checker(key))) break;
+		}
+		in.close();
+		}
+		return line;
 	}
-	else {
-		char ch;
-		string str;
-		int y = 0;
-		while (fin.get(ch)) {
-			if (ch == '\n') {
-				cout << str;
-				reverse(str.begin(), str.end());
-				movecursor(90, y);
-				cout << str;
-				y++;
-				str.clear();
-			}
-			else {
-				str += ch;
-			}
-		}
-	}
-	char inp = 10;
-	while (1) {
-		movecursor(0, 19);
-		if ((int)inp > 47) {
-			inp -= 48;
-		}
-		int flag = (int)inp;
-		if (inp == -1) {
-			inp = _getch();
-			flag = (int)inp - 48;
-		}
-		switch (flag) {
-		case 10: { // start menu
-			fin.close();
-			fin.open("startmenu.txt");
-			if (!fin.is_open()) {
-				cout << "Can't open graphic interface file.";
-			}
-			else {
-				char ch;
-				string str;
-				int y = 0;
-				while (fin.get(ch)) {
-					if (ch == '\n') {
-						movecursor(30, y);
-						y++;
-					}
-					else {
-						cout << ch;
-					}
-				}
-			}
-			fin.close();
-			inp = -1;
-			continue;
-		}
-		case 1: { // change password
-			fin.open("changepassword1.txt");
-			if (!fin.is_open()) {
-				cout << "Can't open graphic interface file.";
-			}
-			else {
-				char ch;
-				string str;
-				int y = 0;
-				while (fin.get(ch)) {
-					if (ch == '\n') {
-						movecursor(30, y);
-						y++;
-					}
-					else {
-						cout << ch;
-					}
-				}
-				movecursor(57, 10);
-				str.clear();
-				while (str.size() < 4) { // password request
-					ch = _getch();
-					if (ch == '\b') {
-						if (str.size() > 0) {
-							str.pop_back();
-							cout << ch << '-' << ch;
-							continue;
-						}
-						else {
-							continue;
-						}
-					}
-					else if (ch == '\x1b') {
-						inp = 10;
-						break;
-					}
-					else {
-						str += ch;
-						cout << '*';
-					}
-				}
-				fin.close();
-				if (ch == '\x1b') continue;
-				if (str == password) { // if right
-					fin.open("changepassword2.txt");
-					if (!fin.is_open()) {
-						cout << "Can't open graphic interface file.";
-					}
-					else {
-						char ch;
-						string str;
-						int y = 0;
-						while (fin.get(ch)) {
-							if (ch == '\n') {
-								movecursor(30, y);
-								y++;
-							}
-							else {
-								cout << ch;
-							}
-						}
-						movecursor(57, 10);
-						str.clear();
-						while (str.size() < 4) { // new password request
-							ch = _getch();
-							if (ch == '\b') {
-								if (str.size() > 0) {
-									str.pop_back();
-									cout << ch << '-' << ch;
-									continue;
-								}
-								else {
-									continue;
-								}
-							}
-							else if (ch == '\x1b') {
-								inp = 10;
-								break;
-							}
-							else {
-								str += ch;
-								cout << '*';
-							}
-						}
-						fin.close();
-						if (ch == '\x1b') continue;
-						password = str;
-						inp = 10;
-						continue;
-					}
-				}
-				else { // if wrong
-					movecursor(52, 11);
-					cout << "Wrong password";
-					movecursor(47, 12);
-					cout << "Press any key to continue";
-					inp = 1;
-					_getch();
-					continue;
-				}
-			}
-			continue;
-		}
-		case 27: {
+
+
+bool checker(const string& text) {
+	for (auto& c : text) {
+		if (c < 32 || c > 126) {
+			cout << "Повторите ввод" << endl;
 			return 0;
 		}
-		default: continue;
-		}
 	}
+	return 1;
+}
+
+int main()
+{
+	setlocale(LC_ALL, "Russian");
+	string s;
+	cout << "Пароль: ";
+	cin >> s;
+	if (s == "123456") {
+		Prog();
+	}
+	else {
+		cout << "Неверный пароль: " << endl;
+		return 0;
+	}
+	system("pause");
 	return 0;
 }
+

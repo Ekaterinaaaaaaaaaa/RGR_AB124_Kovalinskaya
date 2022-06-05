@@ -14,7 +14,7 @@ void movecursor(int x, int y) {
 int main() {
 	string password = "1111";
 	ifstream fin;
-	fin.open("amogus.txt");
+	fin.open("test.txt");
 	if (!fin.is_open()) {
 		cout << "Can't open graphic interface file.";
 	}
